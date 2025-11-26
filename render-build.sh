@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -e
 
-# Версию Maven можно поменять при желании
 MAVEN_VERSION=3.9.8
+MAVEN_DIR="apache-maven-${MAVEN_VERSION}"
+MAVEN_TGZ="${MAVEN_DIR}-bin.tar.gz"
 
-echo ">>> Download Maven ${MAVEN_VERSION}"
-curl -sL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION%.*}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" | tar xz
+echo ">>> [Render] Downloading Maven ${MAVEN_VERSION}"
+curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/${MAVEN_TGZ}" -o maven.tgz
 
-export PATH="$PWD/apache-maven-${MAVEN_VERSION}/bin:$PATH"
+echo ">>> [Render] Extracting Maven"
+tar -xzf maven.tgz
 
-echo ">>> Maven version:"
+export PATH="$PWD/${MAVEN_DIR}/bin:$PATH"
+
+echo ">>> [Render] Maven version:"
 mvn -version
 
-echo ">>> Build Spring Boot app"
+echo ">>> [Render] Building Spring Boot project"
 mvn -DskipTests=true package
