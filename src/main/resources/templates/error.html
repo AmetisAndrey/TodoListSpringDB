@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Что-то пошло не так</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-card: #020617;
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.15);
+            --danger: #f97373;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .error-shell {
+            width: 100%;
+            max-width: 840px;
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.08), rgba(15, 23, 42, 0.95));
+            border-radius: 24px;
+            padding: 1px;
+            box-shadow:
+                    0 24px 80px rgba(15, 23, 42, 0.9),
+                    0 0 0 1px rgba(15, 23, 42, 0.9);
+        }
+
+        .error-card {
+            border-radius: 23px;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 55%),
+            radial-gradient(circle at bottom right, rgba(248, 113, 113, 0.08), transparent 55%),
+            var(--bg-card);
+            padding: 28px 32px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-glow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                    radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.18), transparent 60%),
+                    radial-gradient(circle at 85% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+            opacity: 0.85;
+            mix-blend-mode: screen;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 20px;
+            background: radial-gradient(circle at 30% 20%, #f97373, #b91c1c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow:
+                    0 0 32px rgba(248, 113, 113, 0.55),
+                    0 8px 22px rgba(15, 23, 42, 0.9);
+        }
+
+        .error-badge::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 17px;
+            border: 1px solid rgba(15, 23, 42, 0.65);
+        }
+
+        .error-badge span {
+            font-size: 26px;
+            color: #fee2e2;
+        }
+
+        .error-title-block h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 0.03em;
+        }
+
+        .error-title-block p {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .error-meta {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(18px);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .badge-danger .badge-dot {
+            background: var(--danger);
+        }
+
+        .badge-label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .badge-value {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .error-body {
+            margin-top: 20px;
+            padding: 16px 16px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.96));
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-body h2 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+        }
+
+        .error-message {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .error-message span.key {
+            color: var(--muted);
+        }
+
+        .error-message span.value {
+            color: var(--accent);
+        }
+
+        .error-tech {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .error-tech-item {
+            padding: 10px 11px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(30, 64, 175, 0.6);
+        }
+
+        .error-tech-label {
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 10px;
+            margin-bottom: 4px;
+            color: #64748b;
+        }
+
+        .error-tech-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            color: var(--text);
+            word-break: break-all;
+        }
+
+        .error-actions {
+            margin-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            appearance: none;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 999px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: radial-gradient(circle at 10% 0, #38bdf8, #0ea5e9);
+            color: #0b1220;
+            font-weight: 600;
+            box-shadow:
+                    0 12px 30px rgba(56, 189, 248, 0.45),
+                    0 0 0 1px rgba(8, 47, 73, 0.8);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                    0 16px 34px rgba(56, 189, 248, 0.55),
+                    0 0 0 1px rgba(8, 47, 73, 0.9);
+        }
+
+        .btn-ghost {
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--muted);
+            border: 1px solid rgba(148, 163, 184, 0.45);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(15, 23, 42, 1);
+            border-color: rgba(148, 163, 184, 0.85);
+            color: var(--text);
+        }
+
+        .btn-icon {
+            font-size: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .error-card {
+                padding: 22px 18px 20px;
+            }
+
+            .error-title-block h1 {
+                font-size: 19px;
+            }
+
+            .error-tech {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="error-shell">
+    <div class="error-card">
+        <div class="error-glow"></div>
+
+        <div class="error-header">
+            <div class="error-badge">
+                <span>!</span>
+            </div>
+            <div class="error-title-block">
+                <h1>Что-то пошло не так</h1>
+                <p>Сервер не смог корректно обработать ваш запрос.</p>
+            </div>
+        </div>
+
+        <div class="error-meta">
+            <div class="badge badge-danger">
+                <span class="badge-dot"></span>
+                <span class="badge-label">Статус</span>
+                <span class="badge-value" th:text="${status} ?: '500'">500</span>
+            </div>
+            <div class="badge">
+                <span class="badge-dot"></span>
+                <span class="badge-label">Путь</span>
+                <span class="badge-value" th:text="${path} ?: '—'">/tasks</span>
+            </div>
+            <div class="badge">
+                <span class="badge-label">Время</span>
+                <span class="badge-value" th:text="${#dates.format(timestamp, 'HH:mm:ss')} ?: '—'">
+                    18:23:59
+                </span>
+            </div>
+        </div>
+
+        <div class="error-body">
+            <h2>Детали ошибки</h2>
+            <p class="error-message">
+                <span class="key">Тип:&nbsp;</span>
+                <span class="value" th:text="${error} ?: 'Внутренняя ошибка сервера'">
+                    Внутренняя ошибка сервера
+                </span>
+                <br/>
+                <span class="key">Сообщение:&nbsp;</span>
+                <span th:text="${message} ?: 'Попробуйте ещё раз, а если проблема повторится — обратитесь к разработчику.'">
+                    Попробуйте ещё раз, а если проблема повторится — обратитесь к разработчику.
+                </span>
+            </p>
+
+            <div class="error-tech">
+                <div class="error-tech-item">
+                    <div class="error-tech-label">Запрошенный путь</div>
+                    <div class="error-tech-value" th:text="${path} ?: '—'">/tasks</div>
+                </div>
+                <div class="error-tech-item">
+                    <div class="error-tech-label">Время</div>
+                    <div class="error-tech-value"
+                         th:text="${#dates.format(timestamp, 'dd.MM.yyyy HH:mm:ss')} ?: '—'">
+                        26.11.2025 18:23:59
+                    </div>
+                </div>
+                <div class="error-tech-item">
+                    <div class="error-tech-label">Статус / код</div>
+                    <div class="error-tech-value">
+                        <span th:text="${status} ?: '500'">500</span>
+                        &nbsp;—&nbsp;
+                        <span th:text="${error} ?: 'Internal Server Error'">Internal Server Error</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">
+                <span class="btn-icon">⟲</span>
+                <span>Вернуться к задачам</span>
+            </a>
+
+            <button class="btn btn-ghost" type="button" onclick="window.location.reload()">
+                <span class="btn-icon">↻</span>
+                <span>Повторить запрос</span>
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
