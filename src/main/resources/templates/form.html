@@ -104,7 +104,6 @@
         <div class="col-12 col-lg-9 col-xl-7">
             <div class="card card-glass p-3 p-md-4 p-lg-5">
 
-                <!-- Заголовок -->
                 <div class="d-flex justify-content-between align-items-start mb-3 mb-md-4">
                     <div>
                         <h2 class="mb-1" th:text="${isNew} ? 'Новая задача' : 'Редактирование задачи'"></h2>
@@ -118,13 +117,11 @@
                     </div>
                 </div>
 
-                <!-- Форма -->
                 <form th:action="${isNew} ? @{/tasks} : @{|/tasks/${taskForm.id}/edit|}"
                       th:object="${taskForm}"
                       method="post"
                       class="mt-2">
 
-                    <!-- Блок: Основное -->
                     <div class="mb-3 mb-md-4">
                         <div class="section-title mb-2">Основное</div>
 
@@ -146,8 +143,6 @@
                                       th:field="*{description}"></textarea>
                         </div>
                     </div>
-
-                    <!-- Блок: Параметры -->
                     <div class="mb-3 mb-md-4">
                         <div class="section-title mb-2">Параметры</div>
 
@@ -179,7 +174,6 @@
                         </div>
                     </div>
 
-                    <!-- Кнопки -->
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mt-4">
                         <div class="mb-3 mb-md-0">
                             <button type="submit" class="btn btn-soft-primary d-inline-flex align-items-center gap-2 px-4">

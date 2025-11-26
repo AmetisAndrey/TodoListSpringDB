@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/tasks") // БАЗОВЫЙ ПУТЬ: всё ниже /tasks/...
+@RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -46,7 +46,7 @@ public class TaskController {
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedPriority", priority);
 
-        return "list"; // templates/list.html
+        return "list";
     }
 
     // GET /tasks/new
@@ -57,7 +57,7 @@ public class TaskController {
         model.addAttribute("allStatuses", TaskStatus.values());
         model.addAttribute("allPriorities", TaskPriority.values());
         model.addAttribute("isNew", true);
-        return "form"; // templates/form.html
+        return "form";
     }
 
     // POST /tasks
