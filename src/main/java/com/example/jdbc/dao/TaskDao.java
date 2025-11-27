@@ -23,4 +23,9 @@ public interface TaskDao {
     List<Task> findByPriority(TaskPriority priority);
 
     List<Task> findOverdue(LocalDate date);
+
+    List<Task> findAllForOwner(String owner);
+    List<Task> findByStatusForOwner(TaskStatus status, String owner);
+    List<Task> findByPriorityForOwner(TaskPriority priority, String owner);
+
 }

@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -35,13 +36,14 @@ public class TaskDaoJdbc implements TaskDao {
         t.setDueDate(rs.getObject("due_date", LocalDate.class));
         t.setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
         t.setUpdatedAt(rs.getObject("updated_at", LocalDateTime.class));
+        t.setOwner(rs.getString("owner")); // НОВОЕ
         return t;
     };
 
     @Override
     public List<Task> findAll() {
         String sql = """
-                select id, title, description, status, priority, due_date, created_at, updated_at
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
                 from tasks
                 order by due_date nulls last, priority desc
                 """;
@@ -51,7 +53,7 @@ public class TaskDaoJdbc implements TaskDao {
     @Override
     public Optional<Task> findById(Long id) {
         String sql = """
-                select id, title, description, status, priority, due_date, created_at, updated_at
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
                 from tasks
                 where id = ?
                 """;
@@ -70,9 +72,9 @@ public class TaskDaoJdbc implements TaskDao {
 
     private Task insert(Task task) {
         String sql = """
-            insert into tasks (title, description, status, priority, due_date, created_at, updated_at)
-            values (?, ?, ?, ?, ?, ?, ?)
-            """;
+                insert into tasks (title, description, status, priority, due_date, created_at, updated_at, owner)
+                values (?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -85,6 +87,7 @@ public class TaskDaoJdbc implements TaskDao {
             ps.setObject(5, task.getDueDate());
             ps.setObject(6, task.getCreatedAt());
             ps.setObject(7, task.getUpdatedAt());
+            ps.setString(8, task.getOwner());
             return ps;
         }, keyHolder);
 
@@ -101,7 +104,7 @@ public class TaskDaoJdbc implements TaskDao {
     private Task update(Task task) {
         String sql = """
                 update tasks
-                set title = ?, description = ?, status = ?, priority = ?, due_date = ?, updated_at = ?
+                set title = ?, description = ?, status = ?, priority = ?, due_date = ?, updated_at = ?, owner = ?
                 where id = ?
                 """;
 
@@ -112,6 +115,7 @@ public class TaskDaoJdbc implements TaskDao {
                 task.getPriority().name(),
                 task.getDueDate(),
                 task.getUpdatedAt(),
+                task.getOwner(),
                 task.getId());
 
         return task;
@@ -125,7 +129,7 @@ public class TaskDaoJdbc implements TaskDao {
     @Override
     public List<Task> findByStatus(TaskStatus status) {
         String sql = """
-                select id, title, description, status, priority, due_date, created_at, updated_at
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
                 from tasks
                 where status = ?
                 order by due_date nulls last
@@ -136,7 +140,7 @@ public class TaskDaoJdbc implements TaskDao {
     @Override
     public List<Task> findByPriority(TaskPriority priority) {
         String sql = """
-                select id, title, description, status, priority, due_date, created_at, updated_at
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
                 from tasks
                 where priority = ?
                 order by due_date nulls last
@@ -147,12 +151,47 @@ public class TaskDaoJdbc implements TaskDao {
     @Override
     public List<Task> findOverdue(LocalDate date) {
         String sql = """
-                select id, title, description, status, priority, due_date, created_at, updated_at
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
                 from tasks
                 where due_date < ?
                   and status <> 'DONE'
                 order by due_date
                 """;
         return jdbc.query(sql, taskRowMapper, date);
+    }
+
+    @Override
+    public List<Task> findAllForOwner(String owner) {
+        String sql = """
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
+                from tasks
+                where owner = ?
+                order by due_date nulls last, priority desc
+                """;
+        return jdbc.query(sql, taskRowMapper, owner);
+    }
+
+    @Override
+    public List<Task> findByStatusForOwner(TaskStatus status, String owner) {
+        String sql = """
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
+                from tasks
+                where status = ?
+                  and owner = ?
+                order by due_date nulls last
+                """;
+        return jdbc.query(sql, taskRowMapper, status.name(), owner);
+    }
+
+    @Override
+    public List<Task> findByPriorityForOwner(TaskPriority priority, String owner) {
+        String sql = """
+                select id, title, description, status, priority, due_date, created_at, updated_at, owner
+                from tasks
+                where priority = ?
+                  and owner = ?
+                order by due_date nulls last
+                """;
+        return jdbc.query(sql, taskRowMapper, priority.name(), owner);
     }
 }

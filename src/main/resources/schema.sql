@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     priority varchar(50) not null,
     due_date date,
     created_at timestamp not null,
-    updated_at timestamp not null
+    updated_at timestamp not null,
+    owner varchar(50) not null
     );
 
 CREATE TABLE IF NOT EXISTS users(
@@ -30,5 +31,13 @@ VALUES ('admin', '{noop}admin', TRUE)
     ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO authorities (username, authority)
-VALUES ('admin', 'ROLE_USER')
+VALUES ('admin', 'ROLE_ADMIN')
+    ON CONFLICT (username, authority) DO NOTHING;
+
+INSERT INTO users (username, password, enabled)
+VALUES ('student', '{noop}password', TRUE)
+    ON CONFLICT (username) DO NOTHING;
+
+INSERT INTO authorities (username, authority)
+VALUES ('student', 'ROLE_USER')
     ON CONFLICT (username, authority) DO NOTHING;
